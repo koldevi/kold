@@ -1,1 +1,839 @@
-# kold
+#<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOLDEVI — Limited Streetwear</title>
+<meta name="description" content="KOLDEVI — Baltimore-born streetwear. Limited drops. No restocks. Built different.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--white:#f5f0e8;--red:#c8102e;--gray:#1c1c1c;--mid:#2e2e2e;--muted:#666;--dark-red:#a00c24}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'Barlow Condensed',sans-serif;cursor:crosshair;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* CURSOR */
+.cursor{width:12px;height:12px;background:var(--red);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:difference}
+.cursor.expand{width:40px;height:40px}
+
+/* TICKER */
+.ticker{background:var(--red);padding:8px 0;overflow:hidden;white-space:nowrap;position:fixed;top:0;width:100%;z-index:1000}
+.ticker-track{display:inline-block;animation:tick 22s linear infinite}
+.ticker span{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin:0 40px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* NAV */
+nav{position:fixed;top:28px;width:100%;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:18px 48px;background:rgba(10,10,10,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--mid);transition:padding .3s}
+nav.scrolled{padding:14px 48px}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.15em;color:var(--white)}
+.nav-logo span{color:var(--red)}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-right{display:flex;gap:20px;align-items:center}
+.nav-search{background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:crosshair;padding:4px;transition:color .2s}
+.nav-search:hover{color:var(--white)}
+.nav-cart-btn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--white);background:var(--red);padding:8px 20px;border:none;cursor:crosshair;text-transform:uppercase;transition:background .2s}
+.nav-cart-btn:hover{background:var(--dark-red)}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:crosshair;padding:4px}
+.hamburger span{display:block;width:22px;height:1px;background:var(--white);transition:all .3s}
+
+/* MOBILE MENU */
+.mobile-menu{position:fixed;top:0;left:0;width:100%;height:100vh;background:var(--black);z-index:850;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:32px;opacity:0;pointer-events:none;transition:opacity .3s;border-top:28px solid var(--red)}
+.mobile-menu.open{opacity:1;pointer-events:all}
+.mobile-menu a{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.1em;color:var(--white);transition:color .2s}
+.mobile-menu a:hover{color:var(--red)}
+.mobile-close{position:absolute;top:60px;right:32px;background:none;border:none;color:var(--white);font-size:2rem;cursor:crosshair}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:120px 48px 80px;position:relative;overflow:hidden}
+.hero-grid-bg{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.018) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.018) 60px);background-size:60px 60px}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 65% 35%,rgba(200,16,46,.15) 0%,transparent 60%)}
+.hero-watermark{position:absolute;right:-40px;top:50%;transform:translateY(-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(8rem,18vw,20rem);color:rgba(255,255,255,.025);letter-spacing:-.02em;user-select:none;pointer-events:none;line-height:1}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--red);margin-bottom:20px;opacity:0;animation:fadeUp .7s .3s forwards;position:relative}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4.5rem,13vw,13rem);line-height:.92;letter-spacing:-.01em;opacity:0;animation:fadeUp .7s .5s forwards;position:relative}
+.hero-title .red{color:var(--red)}
+.hero-title .indent{margin-left:clamp(16px,4vw,100px)}
+.hero-bottom{margin-top:48px;display:flex;justify-content:space-between;align-items:flex-end;gap:32px;opacity:0;animation:fadeUp .7s .75s forwards;position:relative;flex-wrap:wrap}
+.hero-desc{font-size:1rem;letter-spacing:.08em;color:var(--muted);max-width:300px;line-height:1.7;text-transform:uppercase}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn-red{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--white);background:var(--red);padding:14px 36px;border:none;cursor:crosshair;transition:background .2s,transform .15s;display:inline-block}
+.btn-red:hover{background:var(--dark-red);transform:translateY(-2px)}
+.btn-ghost{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--white);background:transparent;padding:14px 36px;border:1px solid var(--mid);cursor:crosshair;transition:border-color .2s,transform .15s;display:inline-block}
+.btn-ghost:hover{border-color:var(--white);transform:translateY(-2px)}
+.hero-scroll{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.4}
+.hero-scroll span{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;text-transform:uppercase}
+.scroll-line{width:1px;height:40px;background:var(--white);animation:scrollPulse 2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(1)}50%{opacity:1;transform:scaleY(1.3)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* MARQUEE STRIP */
+.marquee-strip{background:var(--red);padding:14px 0;overflow:hidden;white-space:nowrap}
+.marquee-inner{display:inline-block;animation:marquee 20s linear infinite}
+.marquee-inner span{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.15em;margin:0 48px;color:var(--white)}
+.marquee-inner span.dot{color:rgba(255,255,255,.5);font-size:1rem}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* SECTION SHARED */
+.sec-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--mid)}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,5vw,4.5rem);letter-spacing:.05em;line-height:1}
+
+/* PRODUCTS */
+.products-section{padding:100px 48px}
+.products-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:56px}
+.view-all-link{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--mid);padding-bottom:2px;transition:color .2s,border-color .2s}
+.view-all-link:hover{color:var(--white);border-color:var(--white)}
+.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.product-card{background:var(--gray);position:relative;overflow:hidden;cursor:crosshair;transition:transform .3s}
+.product-card:first-child{grid-row:span 2}
+.product-img{width:100%;aspect-ratio:3/4;overflow:hidden;position:relative}
+.product-card:first-child .product-img{aspect-ratio:auto;height:100%}
+.product-visual{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:4rem;color:rgba(255,255,255,.05);letter-spacing:.1em;transition:transform .6s cubic-bezier(.25,.46,.45,.94);min-height:280px}
+.product-card:first-child .product-visual{min-height:560px}
+.product-card:hover .product-visual{transform:scale(1.05)}
+.p1{background:linear-gradient(145deg,#181818,#252525)}
+.p2{background:linear-gradient(145deg,#1e0e0e,#2a1212)}
+.p3{background:linear-gradient(145deg,#0e0e1e,#121225)}
+.p4{background:linear-gradient(145deg,#0e1a0e,#121e12)}
+.p5{background:linear-gradient(145deg,#1a1508,#201a0a)}
+.p6{background:linear-gradient(145deg,#1a0a14,#220e1a)}
+.product-badge{position:absolute;top:14px;left:14px;background:var(--red);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:5px 10px;z-index:2}
+.product-badge.sold{background:var(--mid);color:var(--muted)}
+.product-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background .3s;z-index:3}
+.product-card:hover .product-overlay{background:rgba(0,0,0,.4)}
+.overlay-btn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--white);background:var(--red);padding:12px 28px;border:none;cursor:crosshair;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s}
+.product-card:hover .overlay-btn{opacity:1;transform:translateY(0)}
+.product-info{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--mid)}
+.product-name{font-size:.9rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.product-price{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted)}
+
+/* DROP COUNTDOWN */
+.drop-section{background:var(--red);padding:80px 48px;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.drop-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:rgba(245,240,232,.6);margin-bottom:16px}
+.drop-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,6vw,5.5rem);line-height:1;letter-spacing:.05em}
+.drop-subtitle{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,240,232,.7);margin-top:20px;line-height:2}
+.drop-cta{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
+.btn-white{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);background:var(--white);padding:14px 36px;border:none;cursor:crosshair;transition:transform .15s;display:inline-block}
+.btn-white:hover{transform:scale(1.03)}
+.btn-ghost-white{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--white);background:transparent;padding:14px 36px;border:1px solid rgba(245,240,232,.4);cursor:crosshair;transition:border-color .2s;display:inline-block}
+.btn-ghost-white:hover{border-color:var(--white)}
+.countdown{display:flex;gap:24px;align-items:flex-start}
+.countdown-item{text-align:center}
+.countdown-num{font-family:'Bebas Neue',sans-serif;font-size:5rem;line-height:1;color:var(--white)}
+.countdown-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,240,232,.6);margin-top:4px}
+.countdown-sep{font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;color:rgba(245,240,232,.3);margin-top:8px}
+
+/* LOOKBOOK */
+.lookbook-section{padding:100px 48px}
+.lookbook-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:56px}
+.look-item{position:relative;overflow:hidden;cursor:crosshair;aspect-ratio:2/3}
+.look-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:3rem;color:rgba(255,255,255,.04);letter-spacing:.1em;transition:transform .6s cubic-bezier(.25,.46,.45,.94)}
+.look-item:hover .look-img{transform:scale(1.06)}
+.l1{background:linear-gradient(160deg,#141414,#1e1e1e)}
+.l2{background:linear-gradient(160deg,#1a0a0a,#220f0f)}
+.l3{background:linear-gradient(160deg,#0a0a1a,#0f0f22)}
+.look-caption{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(to top,rgba(0,0,0,.8),transparent);opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s}
+.look-item:hover .look-caption{opacity:1;transform:translateY(0)}
+.look-cap-text{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--white)}
+.look-num{position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.3)}
+
+/* BRAND STATEMENT */
+.statement-section{padding:120px 48px;border-top:1px solid var(--mid);border-bottom:1px solid var(--mid);display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.statement-headline{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,5.5vw,5rem);line-height:1;letter-spacing:.03em}
+.statement-headline .red{color:var(--red)}
+.statement-body{font-size:.95rem;line-height:1.9;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.statement-body p+p{margin-top:20px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px;border-top:1px solid var(--mid);padding-top:40px}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;line-height:1;color:var(--white)}
+.stat-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-top:4px}
+
+/* CATEGORIES */
+.categories-section{padding:80px 48px}
+.cat-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3px;margin-top:48px}
+.cat-item{background:var(--gray);padding:48px 32px;position:relative;overflow:hidden;cursor:crosshair;transition:background .3s}
+.cat-item:hover{background:#1f1f1f}
+.cat-item::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:var(--red);transition:height .4s}
+.cat-item:hover::before{height:100%}
+.cat-num{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--muted);margin-bottom:20px}
+.cat-name{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:.08em;line-height:1}
+.cat-pieces{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+.cat-arrow{position:absolute;bottom:22px;right:22px;font-size:1.3rem;color:var(--mid);transition:color .3s,transform .3s}
+.cat-item:hover .cat-arrow{color:var(--red);transform:translate(4px,-4px)}
+
+/* MARKETING / SOCIAL PROOF */
+.social-proof{padding:80px 48px;background:var(--gray)}
+.proof-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:48px}
+.proof-card{background:var(--black);padding:32px;border:1px solid var(--mid);transition:border-color .3s}
+.proof-card:hover{border-color:var(--red)}
+.proof-handle{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:16px}
+.proof-text{font-size:1rem;line-height:1.6;letter-spacing:.05em;text-transform:uppercase;color:var(--white);font-weight:300}
+.proof-stars{color:var(--red);font-size:.7rem;margin-top:16px;letter-spacing:.1em}
+
+/* PRESS / FEATURES */
+.press-section{padding:60px 48px;border-top:1px solid var(--mid);display:flex;align-items:center;gap:48px;overflow:hidden;flex-wrap:wrap}
+.press-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);flex-shrink:0}
+.press-logos{display:flex;gap:48px;align-items:center;flex-wrap:wrap}
+.press-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.15em;color:var(--mid);transition:color .3s;cursor:default}
+.press-logo:hover{color:var(--muted)}
+
+/* HOW IT WORKS / PROCESS */
+.process-section{padding:100px 48px;background:var(--gray)}
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:56px}
+.process-item{background:var(--black);padding:40px 28px;border-top:3px solid var(--mid);transition:border-color .3s}
+.process-item:hover{border-color:var(--red)}
+.process-num{font-family:'Bebas Neue',sans-serif;font-size:4rem;color:rgba(255,255,255,.05);line-height:1;margin-bottom:24px}
+.process-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.08em;margin-bottom:12px}
+.process-desc{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);line-height:1.8}
+
+/* EMAIL CAPTURE — MARKETING */
+.email-section{padding:120px 48px;text-align:center;position:relative;overflow:hidden}
+.email-bg{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.015) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.015) 60px);background-size:60px 60px}
+.email-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(200,16,46,.08) 0%,transparent 65%)}
+.email-watermark{position:absolute;font-family:'Bebas Neue',sans-serif;font-size:18vw;color:rgba(255,255,255,.02);top:50%;left:50%;transform:translate(-50%,-50%);letter-spacing:.1em;pointer-events:none;user-select:none;white-space:nowrap}
+.email-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--red);margin-bottom:20px;position:relative}
+.email-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,7vw,6rem);letter-spacing:.08em;position:relative;line-height:1}
+.email-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:20px 0 48px;position:relative}
+.email-form{display:flex;max-width:500px;margin:0 auto;position:relative}
+.email-input{flex:1;background:var(--gray);border:1px solid var(--mid);border-right:none;color:var(--white);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:16px 20px;outline:none;cursor:crosshair;transition:border-color .2s}
+.email-input::placeholder{color:var(--muted)}
+.email-input:focus{border-color:var(--red)}
+.email-submit{background:var(--red);border:1px solid var(--red);color:var(--white);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:16px 28px;cursor:crosshair;transition:background .2s;white-space:nowrap}
+.email-submit:hover{background:var(--dark-red)}
+.email-perks{display:flex;justify-content:center;gap:32px;margin-top:28px;flex-wrap:wrap;position:relative}
+.email-perk{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px}
+.email-perk::before{content:'✓';color:var(--red)}
+
+/* SMS */
+.sms-banner{background:var(--mid);padding:32px 48px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
+.sms-text{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,3vw,2.5rem);letter-spacing:.08em}
+.sms-sub{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.sms-form{display:flex;gap:0;flex-wrap:wrap}
+.sms-input{background:var(--black);border:1px solid var(--gray);border-right:none;color:var(--white);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:14px 20px;outline:none;cursor:crosshair;min-width:220px;transition:border-color .2s}
+.sms-input:focus{border-color:var(--red)}
+.sms-submit{background:var(--red);border:1px solid var(--red);color:var(--white);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:14px 20px;cursor:crosshair;transition:background .2s;white-space:nowrap}
+.sms-submit:hover{background:var(--dark-red)}
+
+/* FAQ */
+.faq-section{padding:100px 48px}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:56px}
+.faq-item{background:var(--gray);padding:32px;cursor:pointer;border-left:3px solid transparent;transition:border-color .2s,background .2s}
+.faq-item:hover,.faq-item.open{border-color:var(--red);background:#1f1f1f}
+.faq-q{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;gap:16px;user-select:none}
+.faq-icon{font-family:'Space Mono',monospace;font-size:1.2rem;color:var(--red);flex-shrink:0;transition:transform .3s}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);line-height:1.9;margin-top:16px;display:none}
+.faq-item.open .faq-a{display:block}
+
+/* FOOTER */
+footer{padding:80px 48px 40px;border-top:1px solid var(--mid)}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:60px}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.1em;margin-bottom:16px}
+.footer-logo span{color:var(--red)}
+.footer-tagline{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);line-height:2;max-width:220px}
+.footer-social-icons{display:flex;gap:16px;margin-top:28px}
+.social-icon{width:36px;height:36px;border:1px solid var(--mid);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:border-color .2s,color .2s}
+.social-icon:hover{border-color:var(--red);color:var(--white)}
+.footer-col-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--red);margin-bottom:24px}
+.footer-links{list-style:none}
+.footer-links li{margin-bottom:12px}
+.footer-links a{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.footer-links a:hover{color:var(--white)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--mid);flex-wrap:wrap;gap:16px}
+.footer-copy{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.footer-legal{display:flex;gap:24px}
+.footer-legal a{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.footer-legal a:hover{color:var(--white)}
+
+/* TOAST */
+.toast{position:fixed;bottom:32px;right:32px;background:var(--red);color:var(--white);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:16px 24px;z-index:5000;transform:translateY(80px);opacity:0;transition:transform .4s,opacity .4s}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--red)}
+
+/* ---- RESPONSIVE ---- */
+@media(max-width:1024px){
+  .product-grid{grid-template-columns:repeat(3,1fr)}
+  .product-card:first-child{grid-row:auto}
+  .product-card:first-child .product-img{aspect-ratio:3/4}
+  .footer-top{grid-template-columns:1fr 1fr;gap:40px}
+}
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  nav.scrolled{padding:12px 20px}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .hero{padding:90px 20px 60px}
+  .hero-bottom{flex-direction:column;align-items:flex-start}
+  .products-section,.lookbook-section,.statement-section,.categories-section,.social-proof,.process-section,.email-section,.faq-section{padding:60px 20px}
+  .press-section,.sms-banner{padding:40px 20px}
+  .drop-section{padding:60px 20px;grid-template-columns:1fr;gap:40px}
+  .product-grid{grid-template-columns:1fr 1fr;gap:2px}
+  .lookbook-grid{grid-template-columns:1fr 1fr;gap:2px}
+  .statement-section{grid-template-columns:1fr;gap:40px}
+  .cat-grid{grid-template-columns:1fr 1fr;gap:2px}
+  .proof-grid{grid-template-columns:1fr;gap:2px}
+  .process-grid{grid-template-columns:1fr 1fr;gap:2px}
+  .faq-grid{grid-template-columns:1fr;gap:2px}
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+  .email-form{flex-direction:column}
+  .email-input{border-right:1px solid var(--mid);border-bottom:none}
+  .sms-form{width:100%}
+  .sms-input{flex:1;min-width:0;border-right:1px solid var(--gray)}
+  .stats-row{grid-template-columns:1fr 1fr 1fr}
+  footer{padding:60px 20px 32px}
+}
+@media(max-width:480px){
+  .product-grid{grid-template-columns:1fr}
+  .lookbook-grid{grid-template-columns:1fr}
+  .cat-grid{grid-template-columns:1fr;gap:2px}
+  .process-grid{grid-template-columns:1fr;gap:2px}
+  .countdown{gap:16px}
+  .countdown-num{font-size:3.5rem}
+  .footer-top{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="toast" id="toast"></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="#shop" onclick="closeMobile()">Shop</a>
+  <a href="#lookbook" onclick="closeMobile()">Lookbook</a>
+  <a href="#collections" onclick="closeMobile()">Collections</a>
+  <a href="#about" onclick="closeMobile()">About</a>
+  <a href="#faq" onclick="closeMobile()">FAQ</a>
+  <a href="#" class="btn-red" style="margin-top:16px" onclick="closeMobile()">Shop Now</a>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">KOLDE<span>VI</span></a>
+  <ul class="nav-links">
+    <li><a href="#shop">Shop</a></li>
+    <li><a href="#lookbook">Lookbook</a></li>
+    <li><a href="#collections">Collections</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-search" aria-label="Search">⌕</button>
+    <button class="nav-cart-btn" id="cartBtn">Cart (0)</button>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-watermark">KDV</div>
+  <p class="hero-eyebrow">— SS26 Collection Available Now</p>
+  <h1 class="hero-title">
+    KOLDEVI<br>
+    <span class="red indent">BRAND</span>
+  </h1>
+  <div class="hero-bottom">
+    <p class="hero-desc">Baltimore-born streetwear. Limited runs. No restocks. Built for those who move different.</p>
+    <div class="hero-actions">
+      <a href="#shop" class="btn-red">Shop SS26</a>
+      <a href="#lookbook" class="btn-ghost">Lookbook</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-inner" id="marqueeInner"></div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="products-section" id="shop">
+  <div class="products-header">
+    <div>
+      <div class="sec-label">New Arrivals</div>
+      <h2 class="sec-title">Latest Drops</h2>
+    </div>
+    <a href="#" class="view-all-link">View All →</a>
+  </div>
+  <div class="product-grid">
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-visual p1">KDV</div>
+        <span class="product-badge">Featured</span>
+        <div class="product-overlay"><button class="overlay-btn" onclick="addCart('KDV Archive Hoodie')">Add to Cart</button></div>
+      </div>
+      <div class="product-info">
+        <span class="product-name">KDV Archive Hoodie</span>
+        <span class="product-price">$120</span>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-visual p2">KDV</div>
+        <span class="product-badge">Limited</span>
+        <div class="product-overlay"><button class="overlay-btn" onclick="addCart('Koldevi Box Tee')">Add to Cart</button></div>
+      </div>
+      <div class="product-info">
+        <span class="product-name">Koldevi Box Tee</span>
+        <span class="product-price">$60</span>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-visual p3">KDV</div>
+        <div class="product-overlay"><button class="overlay-btn" onclick="addCart('Utility Cargo Pant')">Add to Cart</button></div>
+      </div>
+      <div class="product-info">
+        <span class="product-name">Utility Cargo Pant</span>
+        <span class="product-price">$145</span>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-visual p4">KDV</div>
+        <span class="product-badge">New</span>
+        <div class="product-overlay"><button class="overlay-btn" onclick="addCart('KDV Quarter Zip')">Add to Cart</button></div>
+      </div>
+      <div class="product-info">
+        <span class="product-name">KDV Quarter Zip</span>
+        <span class="product-price">$95</span>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-visual p5">KDV</div>
+        <span class="product-badge sold">Sold Out</span>
+        <div class="product-overlay"><button class="overlay-btn" onclick="notify('Logo Crewneck')">Notify Me</button></div>
+      </div>
+      <div class="product-info">
+        <span class="product-name">Logo Crewneck</span>
+        <span class="product-price">$85</span>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-img">
+        <div class="product-visual p6">KDV</div>
+        <span class="product-badge">Drop 003</span>
+        <div class="product-overlay"><button class="overlay-btn" onclick="addCart('KDV Warm-Up Set')">Add to Cart</button></div>
+      </div>
+      <div class="product-info">
+        <span class="product-name">KDV Warm-Up Set</span>
+        <span class="product-price">$175</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DROP COUNTDOWN -->
+<section class="drop-section reveal">
+  <div>
+    <div class="drop-label">Upcoming Drop</div>
+    <h2 class="drop-title">DROP 003<br>INCOMING</h2>
+    <p class="drop-subtitle">8 pieces. 1 run. No restocks.<br>Sign up for early access.</p>
+    <div class="drop-cta">
+      <a href="#email-capture" class="btn-white">Get Early Access</a>
+      <a href="#lookbook" class="btn-ghost-white">Preview Lookbook</a>
+    </div>
+  </div>
+  <div>
+    <div class="drop-label" style="margin-bottom:24px">Drops In</div>
+    <div class="countdown">
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-days">00</div>
+        <div class="countdown-label">Days</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-hours">00</div>
+        <div class="countdown-label">Hours</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-mins">00</div>
+        <div class="countdown-label">Mins</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-item">
+        <div class="countdown-num" id="cd-secs">00</div>
+        <div class="countdown-label">Secs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOOKBOOK -->
+<section class="lookbook-section" id="lookbook">
+  <div class="sec-label">SS26 Lookbook</div>
+  <h2 class="sec-title">Wear the Brand</h2>
+  <div class="lookbook-grid">
+    <div class="look-item reveal">
+      <div class="look-img l1">KDV</div>
+      <span class="look-num">001</span>
+      <div class="look-caption"><span class="look-cap-text">KDV Archive Hoodie — Onyx</span></div>
+    </div>
+    <div class="look-item reveal">
+      <div class="look-img l2">KDV</div>
+      <span class="look-num">002</span>
+      <div class="look-caption"><span class="look-cap-text">Box Tee + Utility Cargo — Set</span></div>
+    </div>
+    <div class="look-item reveal">
+      <div class="look-img l3">KDV</div>
+      <span class="look-num">003</span>
+      <div class="look-caption"><span class="look-cap-text">KDV Warm-Up Set — Navy</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BRAND STATEMENT -->
+<section class="statement-section" id="about">
+  <div>
+    <div class="sec-label">The Brand</div>
+    <h2 class="statement-headline">
+      BUILT<br>
+      <span class="red">DIFFERENT.</span><br>
+      WORN<br>
+      DIFFERENT.
+    </h2>
+  </div>
+  <div>
+    <div class="statement-body">
+      <p>KOLDEVI isn't just a brand — it's a standard. Every piece is designed with intention, cut for those who live outside the margins.</p>
+      <p>Baltimore-born. No co-signs needed. No shortcuts taken. When a run ends, it ends. That's the whole point.</p>
+    </div>
+    <div class="stats-row">
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Original</div>
+      </div>
+      <div>
+        <div class="stat-num">LTD</div>
+        <div class="stat-label">Every Run</div>
+      </div>
+      <div>
+        <div class="stat-num">0</div>
+        <div class="stat-label">Restocks</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COLLECTIONS -->
+<section class="categories-section" id="collections">
+  <div class="sec-label">Shop By Category</div>
+  <h2 class="sec-title">Collections</h2>
+  <div class="cat-grid">
+    <div class="cat-item reveal">
+      <div class="cat-num">01</div>
+      <div class="cat-name">Outerwear</div>
+      <div class="cat-pieces">12 pieces</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-item reveal">
+      <div class="cat-num">02</div>
+      <div class="cat-name">Tops</div>
+      <div class="cat-pieces">24 pieces</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-item reveal">
+      <div class="cat-num">03</div>
+      <div class="cat-name">Bottoms</div>
+      <div class="cat-pieces">16 pieces</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-item reveal">
+      <div class="cat-num">04</div>
+      <div class="cat-name">Headwear</div>
+      <div class="cat-pieces">8 pieces</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+    <div class="cat-item reveal">
+      <div class="cat-num">05</div>
+      <div class="cat-name">Accessories</div>
+      <div class="cat-pieces">10 pieces</div>
+      <div class="cat-arrow">↗</div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="social-proof">
+  <div class="sec-label">Customer Love</div>
+  <h2 class="sec-title">They Said It</h2>
+  <div class="proof-grid">
+    <div class="proof-card reveal">
+      <div class="proof-handle">@realtalk___ · Baltimore, MD</div>
+      <p class="proof-text">"The Archive Hoodie is the most clean piece I own right now. Quality is actually crazy. Koldevi is legit."</p>
+      <div class="proof-stars">★★★★★</div>
+    </div>
+    <div class="proof-card reveal">
+      <div class="proof-handle">@zayyyxo · DC</div>
+      <p class="proof-text">"Grabbed the Box Tee first drop and everyone always asks where I got it. Won't find it anywhere else."</p>
+      <div class="proof-stars">★★★★★</div>
+    </div>
+    <div class="proof-card reveal">
+      <div class="proof-handle">@merk.wav · Philly, PA</div>
+      <p class="proof-text">"Slept on drop 001 and regret it every day. I'm locked in for drop 003. Brand is on a different level."</p>
+      <div class="proof-stars">★★★★★</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRESS -->
+<div class="press-section reveal">
+  <span class="press-label">Featured In</span>
+  <div class="press-logos">
+    <span class="press-logo">Hypebeast</span>
+    <span class="press-logo">Highsnobiety</span>
+    <span class="press-logo">Complex</span>
+    <span class="press-logo">Revolt</span>
+    <span class="press-logo">The Shade Room</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="process-section">
+  <div class="sec-label">How We Drop</div>
+  <h2 class="sec-title">The Process</h2>
+  <div class="process-grid">
+    <div class="process-item reveal">
+      <div class="process-num">01</div>
+      <div class="process-title">Concept</div>
+      <p class="process-desc">Every piece starts from scratch. No copying. No trends for the sake of it. Pure vision.</p>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-num">02</div>
+      <div class="process-title">Limited Run</div>
+      <p class="process-desc">We produce small. Every unit matters. When it's gone, it's gone — no exceptions, no repressings.</p>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-num">03</div>
+      <div class="process-title">Drop Day</div>
+      <p class="process-desc">Members get early access. Public drops on the hour. Countdown is real — don't be late.</p>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-num">04</div>
+      <div class="process-title">Wear It</div>
+      <p class="process-desc">No influencer loans. No gifting. You buy it, you wear it. That's how you know it's real.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EMAIL CAPTURE -->
+<section class="email-section" id="email-capture">
+  <div class="email-bg"></div>
+  <div class="email-watermark">KOLDEVI</div>
+  <p class="email-eyebrow">Members Only</p>
+  <h2 class="email-title">Early Access.<br>No Exceptions.</h2>
+  <p class="email-sub">Drop alerts before they go public. Members always get first pick.</p>
+  <div class="email-form">
+    <input type="email" class="email-input" id="emailInput" placeholder="your@email.com">
+    <button class="email-submit" onclick="submitEmail()">Join the List</button>
+  </div>
+  <div class="email-perks">
+    <span class="email-perk">24hr Early Access</span>
+    <span class="email-perk">Drop Alerts</span>
+    <span class="email-perk">Members Pricing</span>
+    <span class="email-perk">No Spam Ever</span>
+  </div>
+</section>
+
+<!-- SMS BANNER -->
+<div class="sms-banner reveal">
+  <div>
+    <div class="sms-text">Get drop alerts by text</div>
+    <div class="sms-sub">Be first. No spam. Text KOLDEVI to join.</div>
+  </div>
+  <div class="sms-form">
+    <input type="tel" class="sms-input" id="smsInput" placeholder="(555) 000-0000">
+    <button class="sms-submit" onclick="submitSMS()">Text Me</button>
+  </div>
+</div>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="sec-label">Questions</div>
+  <h2 class="sec-title">FAQ</h2>
+  <div class="faq-grid" id="faqGrid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">KOLDE<span>VI</span></div>
+      <p class="footer-tagline">Limited streetwear.<br>Baltimore-born.<br>Globally respected.<br>No restocks. Ever.</p>
+      <div class="footer-social-icons">
+        <a href="#" class="social-icon">IG</a>
+        <a href="#" class="social-icon">TK</a>
+        <a href="#" class="social-icon">TW</a>
+        <a href="#" class="social-icon">YT</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Shop</div>
+      <ul class="footer-links">
+        <li><a href="#shop">New Arrivals</a></li>
+        <li><a href="#">Tops</a></li>
+        <li><a href="#">Bottoms</a></li>
+        <li><a href="#">Outerwear</a></li>
+        <li><a href="#">Accessories</a></li>
+        <li><a href="#">Sale</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Brand</div>
+      <ul class="footer-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#lookbook">Lookbook</a></li>
+        <li><a href="#">Stockists</a></li>
+        <li><a href="#">Wholesale</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#">Sizing Guide</a></li>
+        <li><a href="#">Shipping</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Care Guide</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 Koldevi LLC. All rights reserved.</span>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Accessibility</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ---- CURSOR ----
+const cursor=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px'});
+document.querySelectorAll('a,button,.product-card,.cat-item,.look-item,.faq-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cursor.classList.add('expand'));
+  el.addEventListener('mouseleave',()=>cursor.classList.remove('expand'));
+});
+
+// ---- TICKER ----
+const tItems=['NEW DROP: SS26 COLLECTION','FREE SHIPPING OVER $150','LIMITED UNITS — NO RESTOCKS','KOLDEVI — BUILT DIFFERENT','BALTIMORE ORIGINALS','DROP 003 COMING SOON','MEMBERS GET 24HR EARLY ACCESS'];
+const tr=document.getElementById('tickerTrack');
+const tc=[...tItems,...tItems].map(t=>`<span>${t}</span>`).join('');
+tr.innerHTML=tc+tc;
+
+// ---- MARQUEE ----
+const mItems=['KOLDEVI','★','SS26','★','NO RESTOCKS','★','LIMITED','★','BALTIMORE','★','BUILT DIFFERENT','★'];
+const mi=document.getElementById('marqueeInner');
+const mc=[...mItems,...mItems,...mItems,...mItems].map(t=>`<span>${t}</span>`).join('');
+mi.innerHTML=mc;
+
+// ---- NAV SCROLL ----
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{nav.classList.toggle('scrolled',window.scrollY>60)});
+
+// ---- MOBILE MENU ----
+const mm=document.getElementById('mobileMenu');
+document.getElementById('hamburger').onclick=()=>mm.classList.add('open');
+document.getElementById('mobileClose').onclick=()=>mm.classList.remove('open');
+function closeMobile(){mm.classList.remove('open')}
+
+// ---- TOAST ----
+const toast=document.getElementById('toast');
+function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3000)}
+
+// ---- CART ----
+let cartCount=0;
+const cartBtn=document.getElementById('cartBtn');
+function addCart(name){cartCount++;cartBtn.textContent=`Cart (${cartCount})`;showToast(`Added: ${name}`)}
+function notify(name){showToast(`We'll notify you when ${name} restocks`)}
+
+// ---- EMAIL ----
+function submitEmail(){
+  const v=document.getElementById('emailInput').value;
+  if(!v||!v.includes('@')){showToast('Enter a valid email');return}
+  document.getElementById('emailInput').value='';
+  showToast('You\'re in. Watch your inbox.')
+}
+
+// ---- SMS ----
+function submitSMS(){
+  const v=document.getElementById('smsInput').value;
+  if(!v||v.replace(/\D/g,'').length<10){showToast('Enter a valid phone number');return}
+  document.getElementById('smsInput').value='';
+  showToast('Locked in. We\'ll text you first.')
+}
+
+// ---- COUNTDOWN ----
+const dropDate=new Date(Date.now()+14*24*60*60*1000);
+function updateCountdown(){
+  const now=new Date();const diff=dropDate-now;
+  if(diff<=0){return}
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-days').textContent=String(d).padStart(2,'0');
+  document.getElementById('cd-hours').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-mins').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-secs').textContent=String(s).padStart(2,'0');
+}
+updateCountdown();setInterval(updateCountdown,1000);
+
+// ---- FAQ ----
+const faqs=[
+  {q:'Do you ever restock sold-out items?',a:'Never. When a run ends, it ends. Every drop is final. This is intentional — it\'s what makes every piece matter.'},
+  {q:'How do I get early access to drops?',a:'Sign up for the email or SMS list. Members get a 24-hour head start before anything goes public. That\'s the only way in.'},
+  {q:'What is your return policy?',a:'All sales are final on limited drops. If you receive a defective item, contact us within 7 days and we\'ll make it right.'},
+  {q:'How long does shipping take?',a:'Orders ship within 2-3 business days. Standard delivery is 5-7 days. Expedited options available at checkout.'},
+  {q:'Do you ship internationally?',a:'Yes. We ship worldwide. Duties and customs fees are the responsibility of the buyer. Shipping times vary by region.'},
+  {q:'How do I know my size?',a:'Check the sizing guide under Support. Our pieces run true to size with a slightly relaxed fit. When in doubt, size up.'},
+];
+const fg=document.getElementById('faqGrid');
+faqs.forEach((f,i)=>{
+  const el=document.createElement('div');
+  el.className='faq-item reveal';
+  el.innerHTML=`<div class="faq-q">${f.q}<span class="faq-icon">+</span></div><div class="faq-a">${f.a}</div>`;
+  el.querySelector('.faq-q').onclick=()=>el.classList.toggle('open');
+  fg.appendChild(el);
+});
+
+// ---- SCROLL REVEAL ----
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
